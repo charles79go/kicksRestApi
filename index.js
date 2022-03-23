@@ -30,23 +30,47 @@ const getPopular = (num) => {
     });
 };
 
-exports.getKicksInfo = functions.https.onRequest(async (request, response) => {
-    let data = request.body;
+exports.searchProducts = functions.https.onRequest(
+    async (request, response) => {
+        let { searchText, numberOfItems } = request.query;
+
+        let payload = {};
+
+        try {
+            payload = await searchProducts(searchText, numberOfItems);
+        } catch (e) {
+            payload = { error: e, message: '(ctch in srvr)' };
+        }
+
+        response.send(payload);
+    }
+);
+
+exports.getProductPrices = functions.https.onRequest(
+    async (request, response) => {
+        let { styleId } = request.query;
+
+        let payload = {};
+
+        try {
+            payload = await getProdPrices(styleId);
+        } catch (e) {
+            payload = { error: e, message: '(ctch in srvr)' };
+        }
+
+        response.send(payload);
+    }
+);
+
+exports.getTrending = functions.https.onRequest(async (request, response) => {
+    let { numberOfItems } = request.query;
 
     let payload = {};
 
     try {
-        if (data.reqType === 'searchProducts') {
-            payload = await searchProducts(data.searchText, data.numberOfItems);
-        }
-        if (data.reqType === 'getProdPrices') {
-            payload = await getProdPrices(data.styleId);
-        }
-        if (data.reqType === 'getPopular') {
-            payload = await getPopular(data.numberOfItems);
-        }
+        payload = await getPopular(numberOfItems);
     } catch (e) {
-        payload = { error: e };
+        payload = { error: e, message: '(ctch in srvr)' };
     }
 
     response.send(payload);
