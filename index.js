@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const corsHandler = require('cors')({ origin: true });
 const SneaksAPI = require('sneaks-api');
 const sneaks = new SneaksAPI();
 
@@ -32,46 +33,52 @@ const getPopular = (num) => {
 
 exports.searchProducts = functions.https.onRequest(
     async (request, response) => {
-        let { searchText, numberOfItems } = request.query;
+        corsHandler(request, response, async () => {
+            let { searchText, numberOfItems } = request.query;
 
-        let payload = {};
+            let payload = {};
 
-        try {
-            payload = await searchProducts(searchText, numberOfItems);
-        } catch (e) {
-            payload = { error: e, message: '(ctch in srvr)' };
-        }
+            try {
+                payload = await searchProducts(searchText, numberOfItems);
+            } catch (e) {
+                payload = { error: e, message: '(ctch in srvr)' };
+            }
 
-        response.send(payload);
+            response.send(payload);
+        });
     }
 );
 
 exports.getProductPrices = functions.https.onRequest(
     async (request, response) => {
-        let { styleId } = request.query;
+        corsHandler(request, response, async () => {
+            let { styleId } = request.query;
+
+            let payload = {};
+
+            try {
+                payload = await getProdPrices(styleId);
+            } catch (e) {
+                payload = { error: e, message: '(ctch in srvr)' };
+            }
+
+            response.send(payload);
+        });
+    }
+);
+
+exports.getTrending = functions.https.onRequest(async (request, response) => {
+    corsHandler(request, response, async () => {
+        let { numberOfItems } = request.query;
 
         let payload = {};
 
         try {
-            payload = await getProdPrices(styleId);
+            payload = await getPopular(numberOfItems);
         } catch (e) {
             payload = { error: e, message: '(ctch in srvr)' };
         }
 
         response.send(payload);
-    }
-);
-
-exports.getTrending = functions.https.onRequest(async (request, response) => {
-    let { numberOfItems } = request.query;
-
-    let payload = {};
-
-    try {
-        payload = await getPopular(numberOfItems);
-    } catch (e) {
-        payload = { error: e, message: '(ctch in srvr)' };
-    }
-
-    response.send(payload);
+    });
 });
