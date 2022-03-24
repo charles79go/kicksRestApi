@@ -3,10 +3,9 @@ const corsHandler = require('cors')({ origin: true });
 const SneaksAPI = require('sneaks-api');
 const sneaks = new SneaksAPI();
 
-const searchProducts = (search, num) => {
+const searchProducts = (searchText, limit) => {
     return new Promise((resolve, reject) => {
-        // getProducts(keyword, limit, callback) takes in a keyword and limit and returns a product array
-        sneaks.getProducts(search, num, function (err, products) {
+        sneaks.getProducts(searchText, limit, function (err, products) {
             if (err) return reject(err);
             resolve(products);
         });
@@ -15,16 +14,16 @@ const searchProducts = (search, num) => {
 
 const getProdPrices = (styleId) => {
     return new Promise((resolve, reject) => {
-        sneaks.getProductPrices('555088-063', function (err, product) {
+        sneaks.getProductPrices(styleId, function (err, product) {
             if (err) return reject(err);
             resolve(product);
         });
     });
 };
 
-const getPopular = (num) => {
+const getPopular = (limit) => {
     return new Promise((resolve, reject) => {
-        sneaks.getMostPopular(num, function (err, products) {
+        sneaks.getMostPopular(limit, function (err, products) {
             if (err) return reject(err);
             resolve(products);
         });
