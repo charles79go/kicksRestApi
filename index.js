@@ -73,7 +73,7 @@ exports.getTrending = functions.https.onRequest(async (request, response) => {
         let payload = {};
 
         try {
-            payload = await getPopular(Number(numberOfItems) + 1);
+            payload = await getPopular(numberOfItems);
         } catch (e) {
             payload = { error: e, message: '(ctch in srvr)' };
         }
